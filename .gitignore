@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+yolov8n.pt
+.env
+openrouter_key.txt
+gemini_key.txt
