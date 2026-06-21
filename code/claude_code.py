@@ -17,12 +17,13 @@ client = OpenAI(
     base_url="https://openrouter.ai/api/v1"
 )
 
-#read the sample image number from sample_number.txt
-num_file_path = os.path.join(script_dir, "sample_number.txt")
+#read the sample image number from sample_number.txt in the inputs directory (one level up)
+inputs_dir = os.path.join(os.path.dirname(script_dir), "inputs")
+num_file_path = os.path.join(inputs_dir, "sample_number.txt")
 with open(num_file_path, "r") as f:
     sample_num = f.read().strip()
 
-sample_path = os.path.join(script_dir, f"sample_sandwich{sample_num}.jpg")
+sample_path = os.path.join(inputs_dir, f"sample_sandwich{sample_num}.jpg")
 recommended = "Avocado toast with egg"
 upper_thresh = 0.7
 lower_thresh = 0.3

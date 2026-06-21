@@ -8,7 +8,7 @@ import os
 script_dir = os.path.dirname(__file__)
 
 
-#openrouter api key setup (using openrouter to access llama)
+#openrouter api key setup (using openrouter to access grok)
 key_path = os.path.join(script_dir, "openrouter_key.txt")
 with open(key_path, "r") as f:
     api = f.read().strip()
@@ -17,12 +17,13 @@ client = OpenAI(
     base_url="https://openrouter.ai/api/v1"
 )
 
-#read the sample image number from sample_number.txt
-num_file_path = os.path.join(script_dir, "sample_number.txt")
+#read the sample image number from sample_number.txt in the inputs directory (one level up)
+inputs_dir = os.path.join(os.path.dirname(script_dir), "inputs")
+num_file_path = os.path.join(inputs_dir, "sample_number.txt")
 with open(num_file_path, "r") as f:
     sample_num = f.read().strip()
 
-sample_path = os.path.join(script_dir, f"sample_sandwich{sample_num}.jpg")
+sample_path = os.path.join(inputs_dir, f"sample_sandwich{sample_num}.jpg")
 recommended = "Avocado toast with egg"
 upper_thresh = 0.7
 lower_thresh = 0.3
@@ -41,7 +42,7 @@ def encode_image(image_filename):
 #function to compare sample and recommended
 def compare_food(image_filename):
     base64_image = encode_image(image_filename)
-    #prompt for llama to output number from [0,1] (prompt made by ai)
+    #prompt for grok to output number from [0,1] (prompt made by ai)
     prompt = f"""
     You are a nutrition coach.
     Recommended Meal: {recommended}
@@ -84,9 +85,9 @@ def compare_food(image_filename):
     1.0 is a perfect match. 0.0 is completely different.
     Return ONLY the number. No words.
     """
-    #receiving llama output and returning
+    #receiving grok output and returning
     response = client.chat.completions.create(
-        model="meta-llama/llama-3.2-11b-vision-instruct",
+        model="x-ai/grok-4.20",
         messages=[
             {
                 "role": "user",

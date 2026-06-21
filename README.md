@@ -6,6 +6,42 @@ It compiles all recent test runs, historic runs, averages, and grades the models
 
 ---
 
+## 📁 Repository Structure
+
+The project files are organized as follows:
+* **[`code/`](code)**: Contains all the python model scripts and setup files:
+  * `gemini_code.py`: Google Gemini 2.5 Flash API script.
+  * `openai_code.py`, `claude_code.py`, `grok_code.py`, `llama_code.py`: OpenRouter API scripts for respective models.
+  * `yolo_code.py`: Local YOLOv8 food object detection model script.
+  * `run_all.py`: Central runner script that executes all scripts sequentially.
+  * `gemini_key.txt`, `openrouter_key.txt`: Local files containing your API keys (ignored by Git for security).
+* **[`inputs/`](inputs)**: Contains the test image inputs:
+  * `sample_sandwich1.jpg` (Ham/cheese sandwich)
+  * `sample_sandwich2.jpg` (Avocado toast with egg)
+  * `sample_sandwich3.jpg` (Vegetarian sandwich)
+  * `sample_number.txt`: Text file containing just `1`, `2`, or `3` to choose the active sandwich image for all models.
+
+---
+
+## 🚀 How to Run
+
+1. Open your terminal in the `code/` folder:
+   ```bash
+   cd code
+   ```
+2. Run any model script individually:
+   ```bash
+   python gemini_code.py
+   python yolo_code.py
+   ```
+3. Or run all models at once:
+   ```bash
+   python run_all.py
+   ```
+   *(To change which sample image is being analyzed, open `inputs/sample_number.txt` and change the number to `1`, `2`, or `3`.)*
+
+---
+
 ## 📊 Summary of Similarity Scores
 
 | Model | Sample 1 (Ham/Cheese) | Sample 2 (Avocado Toast) | Sample 3 (Veg Sandwich) |

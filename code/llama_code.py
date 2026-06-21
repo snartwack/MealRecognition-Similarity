@@ -1,6 +1,6 @@
 #imports
-from google import genai
-import PIL.Image
+from openai import OpenAI
+import base64
 import os
 
 
@@ -8,18 +8,22 @@ import os
 script_dir = os.path.dirname(__file__)
 
 
-#google gemini api key setup
-key_path = os.path.join(script_dir, "gemini_key.txt")
+#openrouter api key setup (using openrouter to access llama)
+key_path = os.path.join(script_dir, "openrouter_key.txt")
 with open(key_path, "r") as f:
     api = f.read().strip()
-client = genai.Client(api_key=api)
+client = OpenAI(
+    api_key=api,
+    base_url="https://openrouter.ai/api/v1"
+)
 
-#read the sample image number from sample_number.txt
-num_file_path = os.path.join(script_dir, "sample_number.txt")
+#read the sample image number from sample_number.txt in the inputs directory (one level up)
+inputs_dir = os.path.join(os.path.dirname(script_dir), "inputs")
+num_file_path = os.path.join(inputs_dir, "sample_number.txt")
 with open(num_file_path, "r") as f:
     sample_num = f.read().strip()
 
-sample_path = os.path.join(script_dir, f"sample_sandwich{sample_num}.jpg")
+sample_path = os.path.join(inputs_dir, f"sample_sandwich{sample_num}.jpg")
 recommended = "Avocado toast with egg"
 upper_thresh = 0.7
 lower_thresh = 0.3
@@ -29,12 +33,16 @@ lower_thresh = 0.3
 print("-----------------------------------\nReady to compare to: " + recommended + "\n-----------------------------------")
 
 
+#helper function to convert image to base64 text for openrouter
+def encode_image(image_filename):
+    with open(image_filename, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode("utf-8")
 
 
 #function to compare sample and recommended
 def compare_food(image_filename):
-    sample = PIL.Image.open(image_filename)
-    #prompt for google gemini to output number from [0,1] (prompt made by ai)
+    base64_image = encode_image(image_filename)
+    #prompt for llama to output number from [0,1] (prompt made by ai)
     prompt = f"""
     You are a nutrition coach.
     Recommended Meal: {recommended}
@@ -77,9 +85,39 @@ def compare_food(image_filename):
     1.0 is a perfect match. 0.0 is completely different.
     Return ONLY the number. No words.
     """
-    #receiving gemini output and returning
-    response = client.models.generate_content(model='gemini-2.5-flash', contents=[sample, prompt])    
-    return response.text.strip()#(.strip just to remove whitespace)
+    #receiving llama output and returning
+    response = client.chat.completions.create(
+        model="meta-llama/llama-3.2-11b-vision-instruct",
+        messages=[
+            {
+                "role": "user",
+                "content": [
+                    {"type": "text", "text": prompt},
+                    {
+                        "type": "image_url",
+                        "image_url": {
+                            "url": f"data:image/jpeg;base64,{base64_image}"
+                        }
+                    }
+                ]
+            }
+        ],
+        max_tokens=30
+    )
+    
+    # Extract the score from the response
+    text = response.choices[0].message.content.strip()
+    
+    # Try to find a number in the response
+    for word in text.split():
+        clean_word = word.strip(".,;:?!")
+        try:
+            float(clean_word)
+            return clean_word
+        except ValueError:
+            pass
+            
+    return text
 
 
 #update print
