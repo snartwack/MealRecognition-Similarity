@@ -20,6 +20,7 @@ The project files are organized as follows:
   * `sample_sandwich2.jpg` (Avocado toast with egg)
   * `sample_sandwich3.jpg` (Vegetarian sandwich)
   * `sample_number.txt`: Text file containing just `1`, `2`, or `3` to choose the active sandwich image for all models.
+  * `recommended_meal.txt`: Text file containing the target meal name (e.g. `Avocado toast with egg`) to compare against.
 
 ---
 
@@ -38,7 +39,7 @@ The project files are organized as follows:
    ```bash
    python run_all.py
    ```
-   *(To change which sample image is being analyzed, open `inputs/sample_number.txt` and change the number to `1`, `2`, or `3`.)*
+   *(To change the sample image or the target food description being analyzed, modify `inputs/sample_number.txt` and `inputs/recommended_meal.txt`.)*
 
 ---
 
