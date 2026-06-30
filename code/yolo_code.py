@@ -20,8 +20,8 @@ with open(rec_file_path, "r") as f:
     recommended = f.read().strip()
 
 sample_path = os.path.join(inputs_dir, f"sample_sandwich{sample_num}.jpg")
-upper_thresh = 0.7
-lower_thresh = 0.3
+upper_thresh = 7
+lower_thresh = 3
 
 
 #initialization print
@@ -51,19 +51,19 @@ def compare_food(image_filename):
     
     # If the user recommended food contains toast/sandwich/bread, and we detect 'sandwich'
     if ("sandwich" in detected) and ("toast" in rec_lower or "sandwich" in rec_lower or "bread" in rec_lower):
-        return "0.8"
+        return "8"
     
     # Check other simple COCO food matches (banana, apple, orange, broccoli, carrot, hot dog, pizza, donut, cake)
     for item in ["apple", "banana", "orange", "broccoli", "carrot", "hot dog", "pizza", "donut", "cake"]:
         if (item in detected) and (item in rec_lower):
-            return "1.0"
+            return "10"
             
     # If some food was detected but doesn't match the recommended food
     for item in ["sandwich", "apple", "banana", "orange", "broccoli", "carrot", "hot dog", "pizza", "donut", "cake"]:
         if item in detected:
-            return "0.3"
+            return "3"
             
-    return "0.0"
+    return "1"
 
 
 #update print

@@ -6,12 +6,11 @@ script_dir = os.path.dirname(__file__)
 
 # List of all the model scripts we want to run
 scripts = [
-    "gemini_code.py",
-    "openai_code.py",
-    "claude_code.py",
-    "grok_code.py",
-    "llama_code.py",
-    "yolo_code.py"
+    "qwen_code.py",
+    "llava_code.py",
+    "moondream_code.py",
+    "yolo_code.py",
+    "gemini_code.py"
 ]
 
 print("====================================================", flush=True)

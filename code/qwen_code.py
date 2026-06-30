@@ -1,19 +1,11 @@
 #imports
-from google import genai
-import PIL.Image
+import ollama
 import os
 import re
 
 
 #variables
 script_dir = os.path.dirname(__file__)
-
-
-#google gemini api key setup
-key_path = os.path.join(script_dir, "gemini_key.txt")
-with open(key_path, "r") as f:
-    api = f.read().strip()
-client = genai.Client(api_key=api)
 
 #read the sample image number and recommended meal from files in the inputs directory (one level up)
 inputs_dir = os.path.join(os.path.dirname(script_dir), "inputs")
@@ -37,20 +29,27 @@ lower_thresh = 3
 print("-----------------------------------\nReady to compare to: " + recommended + "\n-----------------------------------")
 
 
-
-
 #function to compare sample and recommended
 def compare_food(image_filename):
-    sample = PIL.Image.open(image_filename)
-    #prompt for google gemini to output score from 1 to 10
+    #prompt for qwen to output score from 1 to 10
     prompt = f"""
     Look at the provided image of the consumed meal. Compare it thoroughly with the recommended target meal: {recommended}.
     Provide your output strictly in the following format: Score: [Give a single integer from 1 to 10, where 10 means perfect adherence and 1 means completely different]
     """
     
-    #receiving gemini output and returning
-    response = client.models.generate_content(model='gemini-2.5-flash', contents=[sample, prompt])    
-    text = response.text.strip()
+    #receiving output from local qwen model via Ollama
+    response = ollama.chat(
+        model="qwen2.5vl:3b",
+        messages=[
+            {
+                "role": "user",
+                "content": prompt,
+                "images": [image_filename]
+            }
+        ]
+    )
+    
+    text = response["message"]["content"].strip()
     
     # Try to find a number in the response
     for word in text.split():
